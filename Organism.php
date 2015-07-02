@@ -28,12 +28,23 @@ class Species {
 		return $organism;
 	}
 
+	public function getLatestGeneration(){
+		$maxgen = 0;
+		foreach($this->organisms as $organism){
+			if($organism->generation > $maxgen){
+				$maxgen = $organism->generation;
+			}
+		}
+		return $maxgen;
+	}
+
 	public function simulate(){
 		//for now let's do random pairs
 		$organism1 = $this->organisms[mt_rand(0, count($this->organisms) - 1)];
 		$organism2 = $this->organisms[mt_rand(0, count($this->organisms) - 1)];
+		//make sure organism is not mating with itself (awkward!)
 		while($organism1 === $organism2){
-			$organism2 = $this->organisms[mt_rand(0, count($this->organisms) - 1)];
+			$organism2 = @$this->organisms[mt_rand(0, count($this->organisms) - 1)]; //TODO: Do this better
 		}
 		if($organism1 && $organism2){
 			$neworganism = Organism::spawn($organism1, $organism2);
@@ -81,7 +92,7 @@ class Organism {
 		"power" => new Gene("power", "power", 1),
 		"speed" => new Gene("speed", "speed", 5),
 		"agression" => new Gene("aggression", "aggression", 3),
-		"fertility" => new Gene("fertility", "fertility", 90),
+		"fertility" => new Gene("fertility", "fertility", 90), //fertility is our first important gene. The rest have no effect right now.
 		"gene_integrity" => new Gene("gene_integrity", "gene_integrity", 50),
 		);
 	}
