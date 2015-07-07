@@ -179,7 +179,7 @@ class Gene {
 	public function mutate(){
 		if($this->integrity < 100){
 			$delta = (mt_rand($this->integrity - 100,100- $this->integrity) ) / 100;
-			$this->effect = abs($this->effect * $delta);
+			$this->effect = $this->effect + ($this->effect * $delta);
 
 		}
 	}
