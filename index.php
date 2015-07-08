@@ -1,12 +1,17 @@
 <pre>
 <?php
 
+/* Variables */
+
+$years = 6000; //how many years do you want the simulation to run for?
+
+
 require_once("Organism.php");
 
 try{
 	$humans = new Species("Human");
 
-	for($i = 0; $i < 600; $i++){
+	for($i = 0; $i < $years; $i++){
 		$humans->simulate();
 	}
 } catch (Exception $e){
@@ -20,9 +25,20 @@ print $value;
 print "</div>";
 }
 
+function print_organism($org){
+//for now let's do this cheaply
+//TODO build views
+print "<pre>";
+print_r($org);
+print "</pre>";
+}
 
+print_stat("Final Year", $humans->year);
 print_stat("Count Alive", count($humans->organisms));
 print_stat("Count Dead", count($humans->cemetary));
 print_stat("Oldest Age", $humans->getOldest()->getAge($humans));
 print_stat("Max Generation", $humans->getLatestGeneration());
+
+print_organism($humans->organisms[0]);
+
 ?>
