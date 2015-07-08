@@ -25,7 +25,7 @@ class Species {
 				$oldest = $organism;
 			}
 		}
-		return $organism;
+		return $oldest;
 	}
 
 	public function getLatestGeneration(){
