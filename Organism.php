@@ -38,21 +38,37 @@ class Species {
 		return $maxgen;
 	}
 
-	public function simulate(){
-		//for now let's do random pairs
-		$organism1 = $this->organisms[mt_rand(0, count($this->organisms) - 1)];
-		$organism2 = $this->organisms[mt_rand(0, count($this->organisms) - 1)];
-		//make sure organism is not mating with itself (awkward!)
-		while($organism1 === $organism2){
-			$organism2 = @$this->organisms[mt_rand(0, count($this->organisms) - 1)]; //TODO: Do this better
+	public function getPairs(){
+		//let's get some random pairs for the purpose of mating and other interactions
+		shuffle($this->organisms);
+		$pairs = array();
+		$i = 0;		
+		while(count($pairs) < count($this->organisms)/2){
+			$pairs[] = array($this->organisms[$i], $this->organisms[$i+1]);
+			$i++;	
 		}
-		if($organism1 && $organism2){
-			$neworganism = Organism::spawn($organism1, $organism2);
+		return $pairs;
+	}
+
+	public function simulate(){
+		$pairs = $this->getPairs();
+		foreach($pairs as $pair){
+			$neworganism = Organism::spawn($pair[0], $pair[1]);
 			$neworganism->birthday = $this->year;
 			$this->organisms[] = $neworganism;
 		}		
 		$this->cull();
 		$this->year++;
+	}
+
+	public function getHighestGeneEffect($name){
+		$maxeffect = 0;		
+		foreach($this->organisms as $organism){
+			if($organism->getGene($name)->effect > $maxeffect){
+				$maxeffect = $organism->getGene($name)->effect; 
+			}
+		}
+		return $maxeffect;
 	}
 
 	public function cull(){
@@ -91,7 +107,7 @@ class Organism {
 		"color" => new Gene("color", "color", 3),
 		"power" => new Gene("power", "power", 1),
 		"speed" => new Gene("speed", "speed", 5),
-		"agression" => new Gene("aggression", "aggression", 3),
+		"aggression" => new Gene("aggression", "aggression", 3),
 		"fertility" => new Gene("fertility", "fertility", 90), //fertility is our first important gene. The rest have no effect right now.
 		"gene_integrity" => new Gene("gene_integrity", "gene_integrity", 50),
 		);
