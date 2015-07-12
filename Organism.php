@@ -205,3 +205,30 @@ class Gene {
 
 }
 
+
+class Stat {
+	//stat for an organism, usually affected by a gene but can change after other interactions in the simulation.
+	// For instance, if it gets injured, if it has a child etc
+	public $name;
+	public $value;
+	public $type; //type is probably variable type, quantitative, qualitative, etc... may affect mutating operations in the future?
+}
+
+//These classes should probably be populated from an external file format
+
+class Behavior {
+
+	
+
+	public $name; //name of the behavior
+	public $activities = array(); //activities in this behavior. Ex: Mate Seeking
+
+}
+
+class Activity {
+		
+	//an activity that can have success/failure probability and affect outcomes
+	public $name;
+	public $callback; //callback function to find out about success or failure!
+
+}
