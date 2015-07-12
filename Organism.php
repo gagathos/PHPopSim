@@ -97,9 +97,10 @@ class Organism {
 	public $genes = array();
 	public $parent1;
 	public $parent2;
+	public $species;
 
 
-	public function __construct(){
+	public function __construct(&$species){
 		$this->genes = array(
 		"height" => new Gene("height", "height", 5),
 		"weight" => new Gene("weight", "weight", 150),
@@ -111,6 +112,7 @@ class Organism {
 		"fertility" => new Gene("fertility", "fertility", 90), //fertility is our first important gene. The rest have no effect right now.
 		"gene_integrity" => new Gene("gene_integrity", "gene_integrity", 50),
 		);
+		$this->species = $species;
 	}
 
 	public function getAge($species){
@@ -124,6 +126,7 @@ class Organism {
 	static function spawn($parent1,  $parent2){
 		$organism = new Organism;
 		$organism->genes = Organism::splice($parent1, $parent2);
+		//let's make this more realistic (ha!)
 		if(mt_rand(0, 100) > $parent1->getGene("fertility")->effect) $organism->kill("stillborn");
 		if(mt_rand(0, 100) > $parent2->getGene("fertility")->effect) $organism->kill("stillborn");
 
