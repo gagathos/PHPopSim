@@ -1,3 +1,7 @@
+<html>
+<head>
+<title>Population Sim: Hoomans</title>
+</head>
 <pre>
 <?php
 
