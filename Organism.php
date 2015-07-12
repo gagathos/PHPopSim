@@ -103,6 +103,7 @@ class Organism {
 	public $generation = 0;
 	public $coords;
 	public $genes = array();
+	public $stats = array();
 	public $parent1;
 	public $parent2;
 	public $species;
@@ -167,12 +168,39 @@ class Organism {
 
 		//Let's leave this to age compatibility for now...
 
-		return abs($partner->getAge($this->species) - $this->getAge($this->species)) < 15;
+		if(abs($partner->getAge($this->species) - $this->getAge($this->species)) < 15){
+			return true;
+		} else {
+			//uh oh a creepy old person! Add anger to the victim!
+			if($partner->getAge($this->species) > $this->getAge($this->species)){ 
+				$this->addToStat("anger", 1);
+				if($this->getStat("anger") > 10) { //TODO factor in Anger genetics
+					$partner->kill("Murdered for being a creep");
+				}
+			}
+			if($partner->getAge($this->species) < $this->getAge($this->species)){
+				 $partner->addToStat("anger", 1);
+				 if($partner->getStat("anger") > 10){
+					$this->kill("Murdered for being a creep"); //Holy crap! A fight resulting in death.
+				 }
+			}
+			return false;
+		}
 	}
 
 	public function getGene($name){
 		return $this->genes[$name];		
+	}
+	public function getStat($name){
+		return @$this->stats[$name];		
 	}	
+	public function setStat($name, $value){
+		$this->stats[$name] = $value; //for now let's use key->value pairs and then see if we really need those Stat objects...	
+	}
+	public function addToStat($name, $value){
+		$this->setStat($name, $this->getStat($name) + $value);
+	}
+
 
 	public static function splice(Organism $organism1, Organism $organism2){
 		$newGenes = array();
@@ -227,6 +255,7 @@ class Gene {
 }
 
 
+/* //We might use this later... for now let's not and see what happens
 class Stat {
 	//stat for an organism, usually affected by a gene but can change after other interactions in the simulation.
 	// For instance, if it gets injured, if it has a child etc
@@ -234,7 +263,7 @@ class Stat {
 	public $value;
 	public $type; //type is probably variable type, quantitative, qualitative, etc... may affect mutating operations in the future?
 }
-
+*/
 //These classes should probably be populated from an external file format
 
 class Behavior {
