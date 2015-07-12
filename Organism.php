@@ -9,12 +9,14 @@ class Species {
 	public $year = 0;
 	public $ticksperyear = 1;
 	public $maxorganisms = 100;
+	public $startingorganisms = 10;
 	
 	public function __construct($name){
 		$this->name = $name;
 		//create first parents
-		$this->createOrganism();
-		$this->createOrganism();
+		for($i = 0; $i < $this->startingorganisms; $i++){
+			$this->createOrganism();
+		}
 	}
 
 	public function getOldest(){
@@ -53,9 +55,13 @@ class Species {
 	public function simulate(){
 		$pairs = $this->getPairs();
 		foreach($pairs as $pair){
-			$neworganism = Organism::spawn($pair[0], $pair[1]);
-			$neworganism->birthday = $this->year;
-			$this->organisms[] = $neworganism;
+			//for now let's keep the pairs but assume there's some kind of compatibility feature, as an example
+			if($pair[0]->canMate() && $pair[0]->willMateWith($pair[1]) && $pair[1]->canMate() && $pair[1]->willMateWith($pair[0])){
+  				//WOW MATING IS HARD
+				$neworganism = Organism::spawn($pair[0], $pair[1], $this);
+				$neworganism->birthday = $this->year;
+				$this->organisms[] = $neworganism;
+			}
 		}		
 		$this->cull();
 		$this->year++;
@@ -74,6 +80,8 @@ class Species {
 	public function cull(){
 		//put dead organisms in the cemetary
 		foreach($this->organisms as $key => $organism){
+			//check if should die of old age
+			if($organism->getGene('longetivity')->effect < $organism->getAge($this) && mt_rand(0, 15) > 11) $organism->kill("Old Age"); 
 			if(!$organism->alive){
 				$this->cemetary[] = $this->organisms[$key];
 				unset($this->organisms[$key]);
@@ -82,7 +90,7 @@ class Species {
 	}
 	
 	public function createOrganism(){
-		$this->organisms[] = new Organism();
+		$this->organisms[] = new Organism($this);
 	}
 }
 
@@ -115,7 +123,7 @@ class Organism {
 		$this->species = $species;
 	}
 
-	public function getAge($species){
+	public function getAge(&$species){
 		return $species->year - $this->birthday;
 	}
 
@@ -123,8 +131,8 @@ class Organism {
 	//different from spawn, creates a random
 	}
 
-	static function spawn($parent1,  $parent2){
-		$organism = new Organism;
+	static function spawn($parent1,  $parent2, &$species){
+		$organism = new Organism($species);
 		$organism->genes = Organism::splice($parent1, $parent2);
 		//let's make this more realistic (ha!)
 		if(mt_rand(0, 100) > $parent1->getGene("fertility")->effect) $organism->kill("stillborn");
@@ -147,6 +155,19 @@ class Organism {
 	public function kill($reason){
 		$this->status = $reason;
 		$this->alive = false;
+	}
+
+	public function canMate(){
+		//is of proper mating age
+		return $this->getAge($this->species) > 12 && $this->getAge($this->species) < 50;
+	}
+
+	public function willMateWith($partner){
+		//Appreciates and loves their partner enough to form a child
+
+		//Let's leave this to age compatibility for now...
+
+		return abs($partner->getAge($this->species) - $this->getAge($this->species)) < 15;
 	}
 
 	public function getGene($name){

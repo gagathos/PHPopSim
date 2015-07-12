@@ -7,7 +7,7 @@
 
 /* Variables */
 
-$years = 20; //how many years do you want the simulation to run for?
+$years = 100; //how many years do you want the simulation to run for?
 
 
 require_once("Organism.php");
