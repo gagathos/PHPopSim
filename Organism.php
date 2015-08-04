@@ -1,5 +1,9 @@
 <?php
 
+//just a little helper function to help me control the script's output outside of code
+function print_v($message){
+	if($_GET['verbose'] == 1) print $message;
+}
 
 class Species {
 
@@ -76,6 +80,17 @@ class Species {
 		}
 		return $maxeffect;
 	}
+	
+	public function getHighestStat($name){
+		$maxeffect = 0;		
+		foreach($this->organisms as $organism){
+			if($organism->getStat($name) > $maxeffect){
+				$maxeffect = $organism->getStat($name); 
+			}
+		}
+		return $maxeffect;
+	}
+	
 
 	public function cull(){
 		//put dead organisms in the cemetary
@@ -156,6 +171,7 @@ class Organism {
 	public function kill($reason){
 		$this->status = $reason;
 		$this->alive = false;
+		//print_v( "\n Organism was killed! $reason");
 	}
 
 	public function canMate(){
@@ -228,7 +244,7 @@ class Gene {
 	public $name;
 	public $stat;
 	public $effect;
-	public $integrity = 50;
+	public $integrity = 90;
 	
 	public function __construct($name, $stat, $effect, $integrity = 50){
 		$this->name = $name;
